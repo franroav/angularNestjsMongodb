@@ -1,0 +1,93 @@
+<div>
+  <ul class="ul-list-page">
+  <li class="list-group-item list-page" *ngFor="let page of pages; let i = index">
+   
+    <button class="m-4 btn btn-sm btn-danger"  (click)="setCurrentProduct(page, i)">
+      {{ page }}
+    </button> 
+  </li>
+</ul>
+</div>
+
+
+<div class="list">
+  <div class="col">
+    <h2>Article Hacker Post</h2>
+
+    <ul class="list-group">
+      <!--        <li
+          class="list-group-item"
+          *ngFor="let article of articles; let i = index"
+          [class.active]="i == currentIndex"
+          (click)="setCurrentProduct(product, i)"
+        >{{articles}}
+        </li> (click)="onEdit(article, i)"-->
+      <li
+        class="list-group-item"
+        *ngFor="let article of articles; let i = index"
+        [class.active]="i == currentIndex"
+      >
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Id</th>
+              <th>Author</th>
+              <th>Story Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>{{ article.created_at }}</th>
+              <td>
+                <small>{{ article._id }}</small>
+              </td>
+              <td>
+                <small>{{ article.author }}</small>
+              </td>
+              <td>
+                <small>{{ article.story_title }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <small>{{ article.title }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <small>{{ article.comment_text }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <button class="btn" [routerLink]="['/articles/', article._id]">
+          <i class="fa fa-pencil"></i>
+          Editar
+        </button>
+        <button class="btn" (click)="onDelete(article, i)">
+          <i class="fa fa-trash"></i> Eliminar
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>

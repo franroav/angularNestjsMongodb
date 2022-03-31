@@ -1,0 +1,73 @@
+
+
+<div style="width: 500px; margin: auto;">
+    <div class="submit-form">
+      <div *ngIf="!submitted">
+        <div class="form-group">
+          <label for="author"><i class="fa fa-user"></i> Author</label>
+          <input
+            type="text"
+            class="form-control"
+            id="author"
+            required
+            [(ngModel)]="article.author"
+            name="author"
+          />
+        </div>
+        <div class="form-group">
+          <label for="title"><i class="fa fa-book"></i> Title</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            required
+            [(ngModel)]="article.title"
+            name="title"
+          />
+        </div>
+        <div class="form-group">
+          <label for="story title"><i class="fa fa-book"></i> Story Title</label>
+          <input
+            type="text"
+            class="form-control"
+            id="url"
+            required
+            [(ngModel)]="article.story_title"
+            name="story_title"
+          />
+        </div>
+        <div class="form-group">
+          <label for="story text"><i class="fa fa-book"></i> Story Text</label>
+          <input
+            type="text"
+            class="form-control"
+            id="story_text"
+            required
+            [(ngModel)]="article.story_text"
+            name="story_text"
+          />
+        </div>
+        <div class="form-group">
+          <label for="description"> Description</label>
+          <textarea             
+          type="text"
+          class="form-control"
+          id="comment_text"
+          required
+          [(ngModel)]="article.comment_text"
+          name="comment_text">
+           ...
+            </textarea>
+
+        </div>
+  
+        <button (click)="updateArticle()" class="btn">Editar</button>
+      </div>
+  
+      <div *ngIf="submitted">
+        <h3>You successfully edited an article!</h3>
+        <button class="btn" [routerLink]="['/articles']"><i class="fa fa-home"></i>Come back to main page..</button>
+      </div>
+    </div>
+  </div>
+
