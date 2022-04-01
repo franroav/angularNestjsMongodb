@@ -2,7 +2,7 @@
   <ul class="ul-list-page">
   <li class="list-group-item list-page" *ngFor="let page of pages; let i = index">
    
-    <button class="m-4 btn btn-sm btn-danger"  (click)="setCurrentProduct(page, i)">
+    <button class="m-4 btn btn-sm btn-danger"  (click)="setCurrentArticle(page, i)">
       {{ page }}
     </button> 
   </li>
@@ -15,13 +15,6 @@
     <h2>Article Hacker Post</h2>
 
     <ul class="list-group">
-      <!--        <li
-          class="list-group-item"
-          *ngFor="let article of articles; let i = index"
-          [class.active]="i == currentIndex"
-          (click)="setCurrentProduct(product, i)"
-        >{{articles}}
-        </li> (click)="onEdit(article, i)"-->
       <li
         class="list-group-item"
         *ngFor="let article of articles; let i = index"

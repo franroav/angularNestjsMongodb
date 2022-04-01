@@ -37,8 +37,6 @@ export class ArticleDetailsComponent implements OnInit {
           this.article.story_title = this.currentArticle.story_title
           this.article.story_text = this.currentArticle.story_text
           this.article.comment_text = this.currentArticle.comment_text
-         // this.article.author = this.currentArticle.author
-          console.log(article);
         },
         error => {
           console.log(error);

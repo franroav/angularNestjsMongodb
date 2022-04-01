@@ -10,11 +10,6 @@ import { Article } from "../../model/article.model"
 })
 export class ArticleCreateComponent implements OnInit {
   public article: Article;
-  /* {
-    name: '',
-    description: '',
-    available: false
-  };*/
   public submitted = false;
   constructor(
    private articleService: ArticlesService
@@ -22,26 +17,11 @@ export class ArticleCreateComponent implements OnInit {
 
   ngOnInit(): void {
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
-  
-    this.readData(); 
-  }
-
-  async readData(){
-    const read = this.articleService.readAll();
-    console.log(read)
   }
 
   createArticle(): void {
-
-    console.log(this.article); 
-
-
-    /*const data = {
-      name: this.product.name,
-      description: this.product.description
-    };*/
-
-    /*this.articleService.create(data)
+    try {
+      this.articleService.create(this.article)
       .subscribe(
         response => {
           console.log(response);
@@ -49,19 +29,16 @@ export class ArticleCreateComponent implements OnInit {
         },
         error => {
           console.log(error);
-        });*/
+        });
 
         this.formClear(); 
+      
+    } catch (error) {
+      console.log("Error: ", error.stack)
+    }
+
   }
 
-  newArticle(): void {
-    this.submitted = false;
-   /*this.product = {
-      name: '',
-      description: '',
-      available: false
-    };*/
-  }
   formClear(){
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
   }
