@@ -5,6 +5,7 @@ import { Article } from '../../model/article.model';
 import { Observable, of, from, Subject, forkJoin, BehaviorSubject } from 'rxjs';
 import { tap, map, mergeMap, take } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-article-list',
@@ -23,7 +24,7 @@ export class ArticleListComponent implements OnInit {
   currentProduct = null;
   currentIndex = -1;
   name = '';
-  constructor(private articleService: ArticlesService) {
+  constructor(private articleService: ArticlesService, private router: Router) {
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
     //  this.readArticles();
     this.callServiceArticleUpdate();
@@ -31,12 +32,8 @@ export class ArticleListComponent implements OnInit {
   ngOnInit(): void {}
 
   async callServiceArticleUpdate() {
-    //console.log("page", this.page)
     try {
       this.articleService.readAll().subscribe(async (articles) => {
-        //articleList.push()
-        //const articleList = articles;
-        //console.log({articles})
         const dbSize = articles.length / 50;
         await this.setPagesOnLocalStorage(dbSize);
         this.addElementToObservableArray(articles);
@@ -45,38 +42,15 @@ export class ArticleListComponent implements OnInit {
       this.articleList$.subscribe(async (articles) => {
         setTimeout(async () => {
           await this.tablePopulate(articles);
-        }, 2000);
-
-        //console.log({ObsArticles: ObsArticles[0]})
+        }, 200);
       });
-      if (localStorage.getItem('page') !== null) {
-        this.page = Number(JSON.parse(localStorage.getItem('page')));
-      }
-      const promise = await this.articleService.updateDatabaseCollection(
+      const setPage = await this.setPage();
+
+      const promise = await this.articleService.getHackersNewsCollectionByPage(
         this.page,
         this.hits
       );
-      const data = JSON.parse(promise);
-      const hits = data.hits;
-      if (hits.length) {
-        for (let hit of hits) {
-          console.log(hit);
-          this.articleService.create(hit).subscribe(
-            (article) => {
-              return article;
-            },
-            (error) => {
-              console.log(error.stack);
-            }
-          );
-        }
-        localStorage.removeItem('page');
-        this.page++;
-        localStorage.setItem('page', JSON.stringify(this.page));
-        setTimeout(async () => {
-          this.callServiceArticleUpdate();
-        }, 1000);
-      }
+      const serviceCall = await this.validateApiCallToUpdate(promise);
     } catch (error) {}
   }
 
@@ -87,7 +61,6 @@ export class ArticleListComponent implements OnInit {
         for (let article of articles) {
           const { title, author, created_at, _id, story_title, comment_text } =
             article;
-          //console.log(article)
           const comment = comment_text; //comment_text === null ? '' : comment_text.replace(/<[^>]*>/g, '')
           articleList.push({
             title,
@@ -104,9 +77,6 @@ export class ArticleListComponent implements OnInit {
           this.pages.push(x);
         }
         this.articles = articleList;
-        // const newArrArticles = articles.map((article) => ({...article, created_at: article.created_at.split("T")[0]}))
-        //console.log(newArrArticles);
-        // this.articles = newArrArticles
       },
       (error) => {
         console.log(error.stack);
@@ -144,15 +114,42 @@ export class ArticleListComponent implements OnInit {
     return articleList;
   }
 
+  async setPage() {
+    if (localStorage.getItem('page') !== null) {
+      this.page = Number(JSON.parse(localStorage.getItem('page')));
+    }
+  }
   async paginateTable(articleList: any) {
     const countArt = Math.floor(articleList.length / 50);
     for (let x = 1; x <= countArt; x++) {
       this.pages.push(x);
     }
   }
+
+  validateApiCallToUpdate(promise: any) {
+    const data = JSON.parse(promise);
+    const hits = data.hits;
+    if (hits.length) {
+      for (let hit of hits) {
+        this.articleService.create(hit).subscribe(
+          (article) => {
+            return article;
+          },
+          (error) => {
+            console.log(error.stack);
+          }
+        );
+      }
+      localStorage.removeItem('page');
+      this.page++;
+      localStorage.setItem('page', JSON.stringify(this.page));
+      setTimeout(async () => {
+        this.callServiceArticleUpdate();
+      }, 1000);
+    }
+  }
   addElementToObservableArray(item) {
     this.articleList$.pipe(take(1)).subscribe((val) => {
-      //console.log(val);
       const newArr = [...val, item];
       this.subject.next(newArr);
     });
@@ -175,12 +172,10 @@ export class ArticleListComponent implements OnInit {
     this.currentIndex = -1;
   }
   onDelete(article, i): void {
-    //console.log({article, i})
     this.articleService.delete(article._id).subscribe(
       (articles) => {
         alert(JSON.stringify(articles));
-        // this.articles = articles;
-        //console.log(articles);
+        this.router.navigate(['/articles']);
       },
       (error) => {
         console.log(error.stack);

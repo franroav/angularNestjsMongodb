@@ -38,7 +38,7 @@ export class ArticlesService {
   searchByName(name): Observable<any> {
     return this.httpClient.get(`${baseURL}?name=${name}`);
   }
-  updateDatabaseCollection(page: Number, hits: Number): Promise<any>{
+  getHackersNewsCollectionByPage(page: Number, hits: Number): Promise<any>{
     try {
       let apiURL = `${baseURL}/page=${page}&hits=${hits}`;
       return this.httpClient.get(apiURL).toPromise()

@@ -54,7 +54,6 @@ export class ArticleDetailsComponent implements OnInit {
       .subscribe(
         response => {
           this.currentArticle.available = status;
-          console.log(response);
         },
         error => {
           console.log(error);
@@ -65,7 +64,6 @@ export class ArticleDetailsComponent implements OnInit {
     this.articleService.update(this.currentArticle.id, this.currentArticle)
       .subscribe(
         response => {
-          console.log(response);
           alert('The article was updated!')
           this.message = 'The article was updated!';
           this.router.navigate(['/articles']);
@@ -79,7 +77,6 @@ export class ArticleDetailsComponent implements OnInit {
     this.articleService.delete(this.currentArticle.id)
       .subscribe(
         response => {
-          console.log(response);
           this.router.navigate(['/articles']);
         },
         error => {
