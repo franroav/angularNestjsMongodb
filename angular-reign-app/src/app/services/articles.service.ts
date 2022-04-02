@@ -5,46 +5,63 @@ import { Observable } from 'rxjs';
 const baseURL = 'http://localhost:3000/articles';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ArticlesService {
-
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   readAll(): Observable<any> {
-    return this.httpClient.get(baseURL);
+    try {
+      return this.httpClient.get(baseURL);
+    } catch (e) {
+      console.log('error: ' + e.stack);
+    }
   }
 
-  read(id): Observable<any> {
-    return this.httpClient.get(`${baseURL}/${id}`);
+  read(id: String): Observable<any> {
+    try {
+      return this.httpClient.get(`${baseURL}/${id}`);
+    } catch (e) {
+      console.log('error: ' + e.stack);
+    }
   }
 
-  create(data): Observable<any> {
-    return this.httpClient.post(baseURL + '/create', data);
+  create(data: any): Observable<any> {
+    try {
+      return this.httpClient.post(baseURL + '/create', data);
+    } catch (e) {
+      console.log('error: ' + e.stack);
+    }
   }
 
-  update(id, data): Observable<any> {
-    return this.httpClient.put(`${baseURL}/${id}`, data);
+  update(id: String, data: any): Observable<any> {
+    try {
+      return this.httpClient.put(`${baseURL}/${id}`, data);
+    } catch (e) {
+      console.log('error: ' + e.stack);
+    }
   }
 
-  delete(id): Observable<any> {
-    return this.httpClient.delete(`${baseURL}/delete?articleID=${id}`);
+  delete(id: String): Observable<any> {
+    try {
+      return this.httpClient.delete(`${baseURL}/delete?articleID=${id}`);
+    } catch (e) {
+      console.log('error: ' + e.stack);
+    }
   }
-
-  deleteAll(): Observable<any> {
-    return this.httpClient.delete(baseURL);
-  }
-
   searchByName(name): Observable<any> {
-    return this.httpClient.get(`${baseURL}?name=${name}`);
+    try {
+      return this.httpClient.get(`${baseURL}?name=${name}`);
+    } catch (e) {
+      console.log('error: ' + e.stack);
+    }
   }
-  getHackersNewsCollectionByPage(page: Number, hits: Number): Promise<any>{
+  getHackersNewsCollectionByPage(page: Number, hits: Number): Promise<any> {
     try {
       let apiURL = `${baseURL}/page=${page}&hits=${hits}`;
-      return this.httpClient.get(apiURL).toPromise()
+      return this.httpClient.get(apiURL).toPromise();
     } catch (e) {
-      console.log(e.stack)
+      console.log('error: ' + e.stack);
     }
- 
   }
 }

@@ -26,73 +26,94 @@ export class ArticleListComponent implements OnInit {
   name = '';
   constructor(private articleService: ArticlesService, private router: Router) {
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
-    //  this.readArticles();
     this.callServiceArticleUpdate();
   }
   ngOnInit(): void {}
 
   async callServiceArticleUpdate() {
     try {
-      this.articleService.readAll().subscribe(async (articles) => {
-        const dbSize = articles.length / 50;
-        await this.setPagesOnLocalStorage(dbSize);
-        this.addElementToObservableArray(articles);
-      });
-
-      this.articleList$.subscribe(async (articles) => {
-        setTimeout(async () => {
+      this.articleService.readAll().subscribe(
+        async (articles) => {
+          const dbSize = articles.length / 50;
+          await this.setPagesOnLocalStorage(dbSize);
+          this.addElementToObservableArray(articles);
+        },
+        (error) => {
+          console.log('error: ' + error.stack);
+        }
+      );
+      this.articleList$.subscribe(
+        async (articles) => {
           await this.tablePopulate(articles);
-        }, 200);
-      });
+        },
+        (error) => {
+          console.log('error: ' + error.stack);
+        }
+      );
       const setPage = await this.setPage();
-
       const promise = await this.articleService.getHackersNewsCollectionByPage(
         this.page,
         this.hits
       );
       const serviceCall = await this.validateApiCallToUpdate(promise);
-    } catch (error) {}
+    } catch (error) {
+      console.log('error: ' + error.stack);
+    }
   }
 
   readArticles(): void {
-    this.articleService.readAll().subscribe(
-      (articles) => {
-        const articleList = [];
-        for (let article of articles) {
-          const { title, author, created_at, _id, story_title, comment_text } =
-            article;
-          const comment = comment_text; //comment_text === null ? '' : comment_text.replace(/<[^>]*>/g, '')
-          articleList.push({
-            title,
-            author,
-            created_at: article.created_at.split('T')[0],
-            _id,
-            story_title,
-            comment_text: comment,
-          });
-        }
+    try {
+      this.articleService.readAll().subscribe(
+        (articles) => {
+          const articleList = [];
+          for (let article of articles) {
+            const {
+              title,
+              author,
+              created_at,
+              _id,
+              story_title,
+              comment_text,
+            } = article;
+            const comment = comment_text; //comment_text === null ? '' : comment_text.replace(/<[^>]*>/g, '')
+            articleList.push({
+              title,
+              author,
+              created_at: article.created_at.split('T')[0],
+              _id,
+              story_title,
+              comment_text: comment,
+            });
+          }
 
-        const countArt = Math.floor(articleList.length / 50);
-        for (let x = 1; x <= countArt; x++) {
-          this.pages.push(x);
+          const countArt = Math.floor(articleList.length / 50);
+          for (let x = 1; x <= countArt; x++) {
+            this.pages.push(x);
+          }
+          this.articles = articleList;
+        },
+        (error) => {
+          console.log('error: ' + error.stack);
         }
-        this.articles = articleList;
-      },
-      (error) => {
-        console.log(error.stack);
-      }
-    );
+      );
+    } catch (error) {
+      console.log('error: ' + error.stack);
+    }
   }
 
   async tablePopulate(articles: any) {
-    const list = await articles[0];
-    if (list !== undefined) {
-      const validateData = list.length === undefined ? false : true;
-      if (validateData) {
-        const articleList = await this.templateArticles(list);
-        const paginate = await this.paginateTable(articleList);
-        this.articles = articleList;
+    try {
+      const list = await articles[0];
+      if (list !== undefined) {
+        const validateData = list.length === undefined ? false : true;
+        if (validateData) {
+          const articleList = await this.templateArticles(list);
+          const paginate = await this.paginateTable(articleList);
+          this.articles = articleList;
+        }
       }
+    } catch (error) {
+      console.log('error: ' + error.stack);
     }
   }
 
@@ -127,25 +148,29 @@ export class ArticleListComponent implements OnInit {
   }
 
   validateApiCallToUpdate(promise: any) {
-    const data = JSON.parse(promise);
-    const hits = data.hits;
-    if (hits.length) {
-      for (let hit of hits) {
-        this.articleService.create(hit).subscribe(
-          (article) => {
-            return article;
-          },
-          (error) => {
-            console.log(error.stack);
-          }
-        );
+    try {
+      const data = JSON.parse(promise);
+      const hits = data.hits;
+      if (hits.length) {
+        for (let hit of hits) {
+          this.articleService.create(hit).subscribe(
+            (article) => {
+              return article;
+            },
+            (error) => {
+              console.log('error: ' + error.stack);
+            }
+          );
+        }
+        localStorage.removeItem('page');
+        this.page++;
+        localStorage.setItem('page', JSON.stringify(this.page));
+        setTimeout(async () => {
+          this.callServiceArticleUpdate();
+        }, 1000);
       }
-      localStorage.removeItem('page');
-      this.page++;
-      localStorage.setItem('page', JSON.stringify(this.page));
-      setTimeout(async () => {
-        this.callServiceArticleUpdate();
-      }, 1000);
+    } catch (error) {
+      console.log('error: ' + error.stack);
     }
   }
   addElementToObservableArray(item) {
@@ -172,15 +197,19 @@ export class ArticleListComponent implements OnInit {
     this.currentIndex = -1;
   }
   onDelete(article, i): void {
-    this.articleService.delete(article._id).subscribe(
-      (articles) => {
-        alert(JSON.stringify(articles));
-        this.router.navigate(['/articles']);
-      },
-      (error) => {
-        console.log(error.stack);
-      }
-    );
+    try {
+      this.articleService.delete(article._id).subscribe(
+        (articles) => {
+          alert(JSON.stringify(articles));
+          this.router.navigate(['/articles']);
+        },
+        (error) => {
+          console.log('error: ' + error.stack);
+        }
+      );
+    } catch (error) {
+      console.log('error: ' + error.stack);
+    }
   }
 
   onEdit(product, index): void {
@@ -195,24 +224,7 @@ export class ArticleListComponent implements OnInit {
     const min = (page - 1) * 50;
     const diff = max - min;
     let count = 0;
-
     let arrData = this.articles.filter((art, i) => i <= max && i >= diff);
-
     this.articles = arrData;
-    //this.articles.length
-    //this.currentProduct = product;
-    //this.currentIndex = index;
-  }
-
-  deleteAllArticles(): void {
-    this.articleService.deleteAll().subscribe(
-      (response) => {
-        console.log(response);
-        this.readArticles();
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
   }
 }

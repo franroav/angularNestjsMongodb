@@ -28,7 +28,8 @@ export class ArticleDetailsComponent implements OnInit {
   }
 
   getArticle(id): void {
-    this.articleService.read(id)
+    try {
+      this.articleService.read(id)
       .subscribe(
         article => {
           this.currentArticle = article;
@@ -39,29 +40,17 @@ export class ArticleDetailsComponent implements OnInit {
           this.article.comment_text = this.currentArticle.comment_text
         },
         error => {
-          console.log(error);
+          console.log("error: " + error.stack)
         });
-  }
+    } catch (e) {
+      console.log("error: " + e.stack)
+    }
 
-  setAvailableStatus(status): void {
-    const data = {
-      name: this.currentArticle.name,
-      description: this.currentArticle.description,
-      available: status
-    };
-
-    this.articleService.update(this.currentArticle.id, data)
-      .subscribe(
-        response => {
-          this.currentArticle.available = status;
-        },
-        error => {
-          console.log(error);
-        });
   }
 
   updateArticle(): void {
-    this.articleService.update(this.currentArticle.id, this.currentArticle)
+    try {
+      this.articleService.update(this.currentArticle.id, this.currentArticle)
       .subscribe(
         response => {
           alert('The article was updated!')
@@ -69,23 +58,12 @@ export class ArticleDetailsComponent implements OnInit {
           this.router.navigate(['/articles']);
         },
         error => {
-          console.log(error);
+          console.log("error: " + error.stack)
         });
-  }
+    } catch (e) {
+      console.log("error: " + e.stack)
+    }
 
-  deleteProduct(): void {
-    this.articleService.delete(this.currentArticle.id)
-      .subscribe(
-        response => {
-          this.router.navigate(['/articles']);
-        },
-        error => {
-          console.log(error);
-        });
-  }
-
-  newArticle(): void {
-    this.submitted = false;
   }
   formClear(){
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
