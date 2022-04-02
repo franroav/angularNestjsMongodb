@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ArticlesService } from 'src/app/services/articles.service';
-import { Article } from "../../model/article.model"
+import { Article } from '../../model/article.model';
 
 @Component({
   selector: 'app-article-create',
   templateUrl: './article-create.component.html',
   styleUrls: ['./article-create.component.css'],
-  providers: [ArticlesService]
+  providers: [ArticlesService],
 })
 export class ArticleCreateComponent implements OnInit {
   public article: Article;
   public submitted = false;
-  constructor(
-   private articleService: ArticlesService
-  ) { }
+  constructor(private articleService: ArticlesService) {}
 
   ngOnInit(): void {
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
@@ -21,26 +19,31 @@ export class ArticleCreateComponent implements OnInit {
 
   createArticle(): void {
     try {
-      this.articleService.create(this.article)
-      .subscribe(
-        response => {
-          console.log(response);
-          this.submitted = true;
+      this.articleService.create(this.article).subscribe(
+        (response) => {
+          if (response.internalCode === 200) {
+            this.submitted = true;
+          } else {
+            console.log(
+              'error status: ' +
+                response.internalCode +
+                ' message: ' +
+                response.message
+            );
+          }
         },
-        error => {
+        (error) => {
           console.log(error);
-        });
+        }
+      );
 
-        this.formClear(); 
-      
+      this.formClear();
     } catch (error) {
-      console.log("Error: ", error.stack)
+      console.log('Error: ', error.stack);
     }
-
   }
 
-  formClear(){
+  formClear() {
     this.article = new Article(new Date(), '', '', '', 1, '', '', 1, 1, '', '', 1, 1)
   }
-
 }

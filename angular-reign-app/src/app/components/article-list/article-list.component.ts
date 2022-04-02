@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
 import { ArticlesService } from 'src/app/services/articles.service';
 import { Article } from '../../model/article.model';
 /** RXJS */
@@ -34,9 +34,15 @@ export class ArticleListComponent implements OnInit {
     try {
       this.articleService.readAll().subscribe(
         async (articles) => {
-          const dbSize = articles.length / 50;
+          console.log(articles)
+          if(articles.internalCode === 200){
+            const dbSize = articles.payload.length / 50;
           await this.setPagesOnLocalStorage(dbSize);
-          this.addElementToObservableArray(articles);
+          this.addElementToObservableArray(articles.payload);
+          }else{
+            console.log('error status: ' + articles.internalCode + ' message: ' + articles.message);
+          }
+          
         },
         (error) => {
           console.log('error: ' + error.stack);

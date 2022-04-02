@@ -32,7 +32,7 @@ export class ArticleDetailsComponent implements OnInit {
       this.articleService.read(id)
       .subscribe(
         article => {
-          this.currentArticle = article;
+          this.currentArticle = article.payload;
           this.article.author = this.currentArticle.author
           this.article.title = this.currentArticle.title
           this.article.story_title = this.currentArticle.story_title
