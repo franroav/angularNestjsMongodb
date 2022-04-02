@@ -11,61 +11,84 @@ export class ArticlesController {
     @Post('/create')
     async createArticles(@Body() createArticleDTO: CreateArticlesDTO) {
         console.log({createArticleDTO})
-        const article = await this.articleService.createArticle(createArticleDTO);
-        return article; 
-       /* return res.status(HttpStatus.OK).json({
-            message: 'Article Successfully Created',
-            article
-        });*/
+        try{
+            const article = await this.articleService.createArticle(createArticleDTO);
+            return ({ internalCode: 200, message: 'ok', payload: article })
+        }
+        catch(error){
+            console.log("Error: " + error.stack);
+            return ({ internalCode: 500, message: error.message })
+        }
     }
 
     // Get Article /article
     // @Get('/list')
     @Get('/')
     async getArticles() {
-        const articles = await this.articleService.getArticles();
-        return articles; 
-       // return res.status(HttpStatus.OK).json(articles);
+        try{
+            const article = await this.articleService.getArticles();
+            return ({ internalCode: 200, message: 'ok', payload: article })
+        }
+        catch(error){
+            console.log("Error: " + error.stack);
+            return ({ internalCode: 500, message: error.message })
+        }
     }
 
     // GET single Article: /article/5c9d46100e2e5c44c444b2d1
     @Get('/page=:page&hits=:hits')
     async refreshDatabase(@Res() res, @Param('page') page, @Param('hits') hits) {
-        const article = await this.articleService.getArticlesServicePromise(page, hits);
-        const articleData = await this.simpleStringify(article);
-        if (!article) throw new NotFoundException('Article does not exist!');
-        return res.status(HttpStatus.OK).json(articleData);
+        try{
+            const article = await this.articleService.getArticlesServicePromise(page, hits);
+            const articleData = await this.simpleStringify(article);
+            return ({ internalCode: 200, message: 'ok', payload: articleData })
+        }
+        catch(error){
+            console.log("Error: " + error.stack);
+            return ({ internalCode: 500, message: error.message })
+        }
     }
 
     // GET single Article: /article/5c9d46100e2e5c44c444b2d1
     @Get('/:articleID')
     async getArticle(@Param('articleID') articleID) {
-        const article = await this.articleService.getArticle(articleID);
-        return article; 
-       /* if (!article) throw new NotFoundException('Article does not exist!');
-        return res.status(HttpStatus.OK).json(article);*/
+        try{
+            const article = await this.articleService.getArticle(articleID);
+            if (!article) throw new NotFoundException('Article does not exist!');
+            return ({ internalCode: 200, message: 'ok', payload: article })
+        }
+        catch(error){
+            console.log("Error: " + error.stack);
+            return ({ internalCode: 500, message: error.message })
+        }
     }
 
     // Delete Article: /delete?articleID=5c9d45e705ea4843c8d0e8f7
     @Delete('/delete')
     async deleteArticle(@Res() res, @Query('articleID') articleID) {
-        const articleDeleted = await this.articleService.deleteArticle(articleID);
-        if (!articleDeleted) throw new NotFoundException('Article does not exist!');
-        return res.status(HttpStatus.OK).json({
-            message: 'Article Deleted Successfully',
-            articleDeleted
-        });
+        try{
+            const articleDeleted = await this.articleService.deleteArticle(articleID);
+            if (!articleDeleted) throw new NotFoundException('Article does not exist!');
+            return ({ internalCode: 200, message: 'ok', payload: articleDeleted })
+        }
+        catch(error){
+            console.log("Error: " + error.stack);
+            return ({ internalCode: 500, message: error.message })
+        }
     }
 
     // Update Article: /update?articleID=5c9d45e705ea4843c8d0e8f7
     @Put('/update')
     async updateArticle(@Res() res, @Body() createArticleDTO: CreateArticlesDTO, @Query('articleID') articleID) {
-        const updatedArticle = await this.articleService.updateArticle(articleID, createArticleDTO);
-        if (!updatedArticle) throw new NotFoundException('Article does not exist!');
-        return res.status(HttpStatus.OK).json({
-            message: 'Article Updated Successfully',
-            updatedArticle 
-        });
+        try{
+            const updatedArticle = await this.articleService.updateArticle(articleID, createArticleDTO);
+            if (!updatedArticle) throw new NotFoundException('Article does not exist!');
+            return ({ internalCode: 200, message: 'ok', payload: updatedArticle })
+        }
+        catch(error){
+            console.log("Error: " + error.stack);
+            return ({ internalCode: 500, message: error.message })
+        }
     }
 
     async simpleStringify (object){
