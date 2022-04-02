@@ -12,7 +12,7 @@ RUN npm ci
 # Bundle app source 
 COPY . .
 RUN npm run build
-EXPOSE 3000 9204
+EXPOSE 3000 5000
 # Run npm Istall 
 CMD ["npm", "run", "start:dev"]
 #CMD ["node", "dist/main"]
